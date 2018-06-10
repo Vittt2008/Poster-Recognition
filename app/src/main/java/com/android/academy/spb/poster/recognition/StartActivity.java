@@ -9,10 +9,14 @@ import android.view.View;
 
 import com.android.academy.spb.poster.recognition.api.PosterService;
 import com.android.academy.spb.poster.recognition.api.entities.Film;
+import com.android.academy.spb.poster.recognition.api.entities.ImageInfo;
+import com.android.academy.spb.poster.recognition.api.entities.ImageInfos;
 import com.android.academy.spb.poster.recognition.model.PosterSaver;
 import com.android.academy.spb.poster.recognition.model.PosterUrlParser;
+import com.google.gson.Gson;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -58,17 +62,21 @@ public class StartActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        ArrayList<ImageInfo> infos = new ArrayList<>();
                         for (Film film : films) {
                             try {
                                 ResponseBody body = service.downloadFile(film.getPoster()).execute().body();
                                 File file = posterUrlParser.parsePosterUrl(film.getPoster());
                                 PosterSaver.savePoster(body, file);
+                                infos.add(new ImageInfo(file.getAbsolutePath(), file.getName(), file.getName().split("\\.")[0]));
                             } catch (Exception e) {
                                 Log.e("=== ERROR ===", "=== ERROR ===", e);
                             }
                         }
+                        ImageInfos imageInfos = new ImageInfos(infos);
+                        String gson = new Gson().toJson(imageInfos);
+                        PosterSaver.savePoterInfo(gson, posterUrlParser.getPosterInfoFile());
                         int i = 0;
-
                     }
                 }).start();
 

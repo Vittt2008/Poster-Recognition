@@ -29,7 +29,7 @@ public class GLView extends GLSurfaceView
         setEGLContextFactory(new ContextFactory());
         setEGLConfigChooser(new ConfigChooser());
 
-        helloAR = new HelloAR();
+        helloAR = new HelloAR(this);
 
         this.setRenderer(new GLSurfaceView.Renderer() {
             @Override

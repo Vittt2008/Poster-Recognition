@@ -11,6 +11,10 @@ package com.android.academy.spb.poster.recognition;
 import android.opengl.GLES20;
 import android.util.Log;
 
+import com.android.academy.spb.poster.recognition.model.PosterSaver;
+import com.android.academy.spb.poster.recognition.model.PosterUrlParser;
+
+import java.io.File;
 import java.util.ArrayList;
 
 import cn.easyar.CameraCalibration;
@@ -41,9 +45,11 @@ public class HelloAR
     private Vec2I view_size = new Vec2I(0, 0);
     private int rotation = 0;
     private Vec4I viewport = new Vec4I(0, 0, 1280, 720);
+    private GLView glView;
 
-    public HelloAR()
+    public HelloAR(GLView glView)
     {
+        this.glView = glView;
         trackers = new ArrayList<ImageTracker>();
     }
 
@@ -92,6 +98,18 @@ public class HelloAR
         }
     }
 
+    private void loadAllFromJsonFile(ImageTracker tracker, File file)
+    {
+        for (ImageTarget target : ImageTarget.setupAll(file.getAbsolutePath(), StorageType.Absolute)) {
+            tracker.loadTarget(target, new FunctorOfVoidFromPointerOfTargetAndBool() {
+                @Override
+                public void invoke(Target target, boolean status) {
+                    Log.i("HelloAR", String.format("load target (%b): %s (%d)", status, target.name(), target.runtimeID()));
+                }
+            });
+        }
+    }
+
     public boolean initialize()
     {
         camera = new CameraDevice();
@@ -108,6 +126,7 @@ public class HelloAR
         loadFromJsonFile(tracker, "targets.json", "argame");
         loadFromJsonFile(tracker, "targets.json", "idback");
         loadAllFromJsonFile(tracker, "targets2.json");
+        loadAllFromJsonFile(tracker, new PosterUrlParser(glView.getContext()).getPosterInfoFile());
         loadFromImage(tracker, "namecard.jpg");
         trackers.add(tracker);
 
