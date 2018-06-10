@@ -4,13 +4,31 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+
+import com.android.academy.spb.poster.recognition.api.PosterService;
+import com.android.academy.spb.poster.recognition.api.entities.Film;
+import com.android.academy.spb.poster.recognition.model.PosterSaver;
+import com.android.academy.spb.poster.recognition.model.PosterUrlParser;
+
+import java.io.File;
+import java.util.List;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * @author Vitaliy Markus
  */
 
 public class StartActivity extends AppCompatActivity {
+
+    private PosterUrlParser posterUrlParser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -20,6 +38,46 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(StartActivity.this, MainActivity.class));
+            }
+        });
+
+        posterUrlParser = new PosterUrlParser(this);
+        prepare();
+    }
+
+    private void prepare() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://spb.subscity.ru/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        PosterService service = retrofit.create(PosterService.class);
+        service.getFilms().enqueue(new Callback<List<Film>>() {
+            @Override
+            public void onResponse(Call<List<Film>> call, Response<List<Film>> response) {
+                List<Film> films = response.body();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (Film film : films) {
+                            try {
+                                ResponseBody body = service.downloadFile(film.getPoster()).execute().body();
+                                File file = posterUrlParser.parsePosterUrl(film.getPoster());
+                                PosterSaver.savePoster(body, file);
+                            } catch (Exception e) {
+                                Log.e("=== ERROR ===", "=== ERROR ===", e);
+                            }
+                        }
+                        int i = 0;
+
+                    }
+                }).start();
+
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Film>> call, Throwable t) {
+
             }
         });
     }
