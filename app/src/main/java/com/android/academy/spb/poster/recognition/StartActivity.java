@@ -1,7 +1,9 @@
 package com.android.academy.spb.poster.recognition;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -79,9 +81,8 @@ public class StartActivity extends AppCompatActivity {
                         int i = 0;
                     }
                 }).start();
-
-
             }
+
 
             @Override
             public void onFailure(Call<List<Film>> call, Throwable t) {
