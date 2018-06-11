@@ -246,6 +246,9 @@ public class HelloAR
                 if (status == TargetStatus.Tracked) {
                     Target target = targetInstance.target();
                     ImageTarget imagetarget = target instanceof ImageTarget ? (ImageTarget) (target) : null;
+
+
+
                     if (imagetarget == null) {
                         continue;
                     }

@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.android.academy.spb.poster.recognition.api.PosterService;
 import com.android.academy.spb.poster.recognition.api.entities.Film;
@@ -15,6 +17,7 @@ import com.android.academy.spb.poster.recognition.api.entities.ImageInfo;
 import com.android.academy.spb.poster.recognition.api.entities.ImageInfos;
 import com.android.academy.spb.poster.recognition.model.PosterSaver;
 import com.android.academy.spb.poster.recognition.model.PosterUrlParser;
+import com.android.academy.spb.poster.recognition.model.Preferences;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -35,6 +38,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class StartActivity extends AppCompatActivity {
 
     private PosterUrlParser posterUrlParser;
+    private ProgressBar progressBar;
+    private Button button;
+    private Preferences preferences;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,9 +52,12 @@ public class StartActivity extends AppCompatActivity {
                 startActivity(new Intent(StartActivity.this, MainActivity.class));
             }
         });
-
+        progressBar = findViewById(R.id.progress);
+        button = findViewById(R.id.button);
         posterUrlParser = new PosterUrlParser(this);
+        preferences = new Preferences(this);
         prepare();
+
     }
 
     private void prepare() {
@@ -61,6 +70,7 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Film>> call, Response<List<Film>> response) {
                 List<Film> films = response.body();
+                preferences.saveFilms(films);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -78,7 +88,13 @@ public class StartActivity extends AppCompatActivity {
                         ImageInfos imageInfos = new ImageInfos(infos);
                         String gson = new Gson().toJson(imageInfos);
                         PosterSaver.savePoterInfo(gson, posterUrlParser.getPosterInfoFile());
-                        int i = 0;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressBar.setVisibility(View.GONE);
+                                button.setEnabled(true);
+                            }
+                        });
                     }
                 }).start();
             }
@@ -90,4 +106,6 @@ public class StartActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

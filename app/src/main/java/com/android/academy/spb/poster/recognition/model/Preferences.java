@@ -39,4 +39,5 @@ public class Preferences {
         sharedPreferences.edit().putString(FILMS_KEY, value).apply();
     }
 
+
 }
