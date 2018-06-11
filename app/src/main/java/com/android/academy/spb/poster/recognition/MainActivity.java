@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private static String key = "gM2WBkYHODDDPaQ7mQfWsyb4rwoFtBySJPexJNubmqqzkGshz2RNIbWlAE2qGmxfGY1VywUblRnrUMtx71cMdHbEKEEdbvSGS6tC69b61cEcMk1bGDKAco4Yc3EYovJ0esoKPJpSG60nyY5XCJ9RVq31xCnTbsmNKzUSC3OHAUGUMBfQuIXDpRr0ckwuqJloYlX0efU7";
     private GLView glView;
     private Preferences preferences;
+    private String oldMeta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,15 +149,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onImageRecognized(String meta) {
-        long filmId = Long.parseLong(meta);
-        List<Film> films = preferences.getFilms();
-        Film film = findFilm(films, filmId);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, film.getTitles().getRussian(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (oldMeta == null || !oldMeta.equals(meta)) {
+            oldMeta = meta;
+            long filmId = Long.parseLong(meta);
+            List<Film> films = preferences.getFilms();
+            Film film = findFilm(films, filmId);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, film.getTitles().getRussian(), Toast.LENGTH_LONG).show();
+                }
+            });
+        }
     }
 
     private Film findFilm(List<Film> films, long filmId) {
