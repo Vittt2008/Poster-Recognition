@@ -3,6 +3,10 @@
 
     <string name="start_message">Очень красивый поиск фильмов</string>
     <string name="action_settings">Settings</string>
-    <string name="button">Перейти к поиску</string>
+    <string name="button">Перейти к поиску \n фильма</string>
     <string name="app_name">Poster Recognition</string>
+    <array name="site_items">
+        <item>Кинопоиск</item>
+        <item>IMDb</item>
+    </array>
 </resources>

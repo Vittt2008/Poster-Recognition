@@ -12,6 +12,9 @@ public class Film {
     @SerializedName("title")
     private Titles titles;
 
+    @SerializedName("rating")
+    private Ratings rating;
+
     public long getId() {
         return id;
     }
@@ -22,5 +25,9 @@ public class Film {
 
     public Titles getTitles() {
         return titles;
+    }
+
+    public Ratings getRating() {
+        return rating;
     }
 }

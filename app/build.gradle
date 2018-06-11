@@ -46,6 +46,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //ANDROID
     implementation "com.android.support:appcompat-v7:$supportVersion"
+    implementation "com.android.support:customtabs:$supportVersion"
     implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
 
     implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"

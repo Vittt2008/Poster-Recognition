@@ -10,10 +10,15 @@ package com.android.academy.spb.poster.recognition;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -21,6 +26,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Toast;
+import android.support.v7.app.AlertDialog;
 
 import com.android.academy.spb.poster.recognition.api.entities.Film;
 import com.android.academy.spb.poster.recognition.model.Preferences;
@@ -157,7 +163,34 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(MainActivity.this, film.getTitles().getRussian(), Toast.LENGTH_LONG).show();
+                    String name = film.getTitles().getRussian();
+                    AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
+                            .setTitle(name)
+                            .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    oldMeta = null;
+                                }
+                            })
+                            .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    oldMeta = null;
+                                }
+                            })
+                            .setItems(R.array.site_items, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if (which == 0) {
+                                        openKinopoisk(film);
+                                        //oldMeta = null;
+                                    } else {
+                                        openImdb(film);
+                                        //oldMeta = null;
+                                    }
+                                }
+                            })
+                            .show();
                 }
             });
         }
@@ -170,5 +203,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return null;
+    }
+
+    private void openKinopoisk(Film film) {
+        String url = "https://www.kinopoisk.ru/film/" + film.getRating().getKinopoisk().getId();
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(this, Uri.parse(url));
+    }
+
+    private void openImdb(Film film) {
+        String url = "https://www.imdb.com/title/tt" + film.getRating().getImdb().getId();
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(this, Uri.parse(url));
     }
 }
