@@ -242,9 +242,9 @@ public class HelloAR {
                     if (imagetarget == null) {
                         continue;
                     }
-                    //if (box_renderer != null) {
-                    //    box_renderer.render(camera.projectionGL(0.2f, 500.f), targetInstance.poseGL(), imagetarget.size());
-                    //}
+                    if (box_renderer != null) {
+                        box_renderer.render(camera.projectionGL(0.2f, 500.f), targetInstance.poseGL(), imagetarget.size());
+                    }
                 }
             }
         } finally {

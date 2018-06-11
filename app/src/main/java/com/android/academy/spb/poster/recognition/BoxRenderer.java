@@ -17,7 +17,7 @@ import java.nio.ShortBuffer;
 import cn.easyar.Matrix44F;
 import cn.easyar.Vec2F;
 
-public class BoxRenderer 
+public class BoxRenderer
 {
     private int program_box;
     private int pos_coord_box;
@@ -209,19 +209,19 @@ public class BoxRenderer
             GLES20.glDrawElements(GLES20.GL_TRIANGLE_FAN, 4, GLES20.GL_UNSIGNED_SHORT, i * 4 * 2);
         }
 
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbo_coord_box);
-        float cube_vertices_2[][] = {
-            /* +z */{size0 / 4, size1 / 4, size0 / 4},{size0 / 4, -size1 / 4, size0 / 4},{-size0 / 4, -size1 / 4, size0 / 4},{-size0 / 4, size1 / 4, size0 / 4},
-            /* -z */{size0 / 4, size1 / 4, 0},{size0 / 4, -size1 / 4, 0},{-size0 / 4, -size1 / 4, 0},{-size0 / 4, size1 / 4, 0}};
-        FloatBuffer cube_vertices_2_buffer = FloatBuffer.wrap(flatten(cube_vertices_2));
-        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, cube_vertices_2_buffer.limit() * 4, cube_vertices_2_buffer, GLES20.GL_DYNAMIC_DRAW);
-        GLES20.glEnableVertexAttribArray(pos_coord_box);
-        GLES20.glVertexAttribPointer(pos_coord_box, 3, GLES20.GL_FLOAT, false, 0, 0);
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbo_color_box_2);
-        GLES20.glEnableVertexAttribArray(pos_color_box);
-        GLES20.glVertexAttribPointer(pos_color_box, 4, GLES20.GL_UNSIGNED_BYTE, true, 0, 0);
-        for(int i = 0; i < 6; i++) {
-            GLES20.glDrawElements(GLES20.GL_TRIANGLE_FAN, 4, GLES20.GL_UNSIGNED_SHORT, i * 4 * 2);
-        }
+//        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbo_coord_box);
+//        float cube_vertices_2[][] = {
+//            /* +z */{size0 / 4, size1 / 4, size0 / 4},{size0 / 4, -size1 / 4, size0 / 4},{-size0 / 4, -size1 / 4, size0 / 4},{-size0 / 4, size1 / 4, size0 / 4},
+//            /* -z */{size0 / 4, size1 / 4, 0},{size0 / 4, -size1 / 4, 0},{-size0 / 4, -size1 / 4, 0},{-size0 / 4, size1 / 4, 0}};
+//        FloatBuffer cube_vertices_2_buffer = FloatBuffer.wrap(flatten(cube_vertices_2));
+//        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, cube_vertices_2_buffer.limit() * 4, cube_vertices_2_buffer, GLES20.GL_DYNAMIC_DRAW);
+//        GLES20.glEnableVertexAttribArray(pos_coord_box);
+//        GLES20.glVertexAttribPointer(pos_coord_box, 3, GLES20.GL_FLOAT, false, 0, 0);
+//        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbo_color_box_2);
+//        GLES20.glEnableVertexAttribArray(pos_color_box);
+//        GLES20.glVertexAttribPointer(pos_color_box, 4, GLES20.GL_UNSIGNED_BYTE, true, 0, 0);
+//        for(int i = 0; i < 6; i++) {
+//            GLES20.glDrawElements(GLES20.GL_TRIANGLE_FAN, 4, GLES20.GL_UNSIGNED_SHORT, i * 4 * 2);
+//        }
     }
 }
