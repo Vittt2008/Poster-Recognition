@@ -20,29 +20,33 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Toast;
+
+import com.android.academy.spb.poster.recognition.api.entities.Film;
+import com.android.academy.spb.poster.recognition.model.Preferences;
 
 import java.util.HashMap;
+import java.util.List;
 
 import cn.easyar.Engine;
 
 
-public class MainActivity extends AppCompatActivity
-{
+public class MainActivity extends AppCompatActivity {
     /*
-    * Steps to create the key for this sample:
-    *  1. login www.easyar.com
-    *  2. create app with
-    *      Name: HelloAR
-    *      Package Name: cn.easyar.samples.helloar
-    *  3. find the created item in the list and show key
-    *  4. set key string bellow
-    */
+     * Steps to create the key for this sample:
+     *  1. login www.easyar.com
+     *  2. create app with
+     *      Name: HelloAR
+     *      Package Name: cn.easyar.samples.helloar
+     *  3. find the created item in the list and show key
+     *  4. set key string bellow
+     */
     private static String key = "gM2WBkYHODDDPaQ7mQfWsyb4rwoFtBySJPexJNubmqqzkGshz2RNIbWlAE2qGmxfGY1VywUblRnrUMtx71cMdHbEKEEdbvSGS6tC69b61cEcMk1bGDKAco4Yc3EYovJ0esoKPJpSG60nyY5XCJ9RVq31xCnTbsmNKzUSC3OHAUGUMBfQuIXDpRr0ckwuqJloYlX0efU7";
     private GLView glView;
+    private Preferences preferences;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -50,6 +54,8 @@ public class MainActivity extends AppCompatActivity
         if (!Engine.initialize(this, key)) {
             Log.e("HelloAR", "Initialization Failed.");
         }
+
+        preferences = new Preferences(this);
 
         glView = new GLView(this);
 
@@ -65,16 +71,17 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private interface PermissionCallback
-    {
+    private interface PermissionCallback {
         void onSuccess();
+
         void onFailure();
     }
+
     private HashMap<Integer, PermissionCallback> permissionCallbacks = new HashMap<Integer, PermissionCallback>();
     private int permissionRequestCodeSerial = 0;
+
     @TargetApi(23)
-    private void requestCameraPermission(PermissionCallback callback)
-    {
+    private void requestCameraPermission(PermissionCallback callback) {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 int requestCode = permissionRequestCodeSerial;
@@ -90,8 +97,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (permissionCallbacks.containsKey(requestCode)) {
             PermissionCallback callback = permissionCallbacks.get(requestCode);
             permissionCallbacks.remove(requestCode);
@@ -110,34 +116,55 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
-        if (glView != null) { glView.onResume(); }
+        if (glView != null) {
+            glView.onResume();
+        }
     }
 
     @Override
-    protected void onPause()
-    {
-        if (glView != null) { glView.onPause(); }
+    protected void onPause() {
+        if (glView != null) {
+            glView.onPause();
+        }
         super.onPause();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onImageRecognized(String meta) {
+        long filmId = Long.parseLong(meta);
+        List<Film> films = preferences.getFilms();
+        Film film = findFilm(films, filmId);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, film.getTitles().getRussian(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private Film findFilm(List<Film> films, long filmId) {
+        for (Film film : films) {
+            if (film.getId() == filmId) {
+                return film;
+            }
+        }
+        return null;
     }
 }
